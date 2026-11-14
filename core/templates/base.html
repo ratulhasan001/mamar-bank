@@ -4,31 +4,29 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="Dummy Banking System" />
-        <title>
-            {% block head_title %}Banking System{% endblock %}
-        </title>
-        <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+        <meta name="description" content="Mamar Bank, a demo online banking app built with Django" />
+        <title>{% block head_title %}Home{% endblock %} | Mamar Bank</title>
+        <link href="https://unpkg.com/tailwindcss@1.9.6/dist/tailwind.min.css" rel="stylesheet">
 
-        {% block head_extra %}{% endblock %}
         <style>
-            footer {
-                position: fixed !important;
-                bottom: 0 !important;
-                width: 100%;
+            /* Shared look for form fields rendered with form_field.html */
+            .form-field input:not([type=checkbox]), .form-field select, .form-field textarea {
+                display: block; width: 100%; background-color: #edf2f7; color: #4a5568;
+                border: 1px solid #e2e8f0; border-radius: .25rem; padding: .75rem 1rem; line-height: 1.25;
             }
+            .form-field input:focus, .form-field select:focus { outline: none; background-color: #fff; border-color: #a0aec0; }
         </style>
+        {% block head_extra %}{% endblock %}
     </head>
-    <body class="bg-indigo-600">
+    <body class="bg-indigo-600 min-h-screen flex flex-col">
         {% include 'navbar.html' %}
         {% block body %}
-            <div class="lg:container lg:mx-auto" id="main">
+            <main class="lg:container lg:mx-auto px-3 lg:px-0 flex-grow w-full" id="main">
                 {% include 'messages.html' %}
                 {% block content %}
                 {% endblock %}
-            </div>
+            </main>
             {% include 'footer.html' %}
-
         {% endblock %}
     </body>
 
