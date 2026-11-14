@@ -1,0 +1,7 @@
+<div class="form-field mb-4">
+    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="{{ field.id_for_label }}">{{ field.label }}</label>
+    {{ field }}
+    {% for error in field.errors %}
+    <p class="text-red-600 text-sm italic pt-1">{{ error }}</p>
+    {% endfor %}
+</div>
