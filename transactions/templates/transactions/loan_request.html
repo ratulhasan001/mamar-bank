@@ -1,48 +1,55 @@
-{% extends 'base.html' %} 
-{% block head_title %}{{ title }}{% endblock %} 
+{% extends 'base.html' %}
+{% load humanize %}
+{% block head_title %}My Loans{% endblock %}
 {% block content %}
 <div class="my-10 py-3 px-4 bg-white rounded-xl shadow-md">
-  <h1 class="font-bold text-3xl text-center pb-5 pt-2">Loan Report</h1>
+  <div class="flex justify-between items-center pt-2 pb-5">
+    <h1 class="font-bold text-3xl">My Loans</h1>
+    <a class="bg-blue-900 text-white hover:bg-blue-700 font-bold py-2 px-4 rounded" href="{% url 'loan_request' %}">Request a loan</a>
+  </div>
   <hr />
-  <table
-    class="table-auto mx-auto w-full px-5 rounded-xl mt-8 border dark:border-neutral-500"
-  >
-    <thead class="bg-purple-900 text-white text-left">
-      <tr
-        class="bg-gradient-to-tr from-indigo-600 to-purple-600 rounded-md py-2 px-4 text-white font-bold"
-      >
-        <th class="px-4 py-2">LOAN ID</th>
-        <th class="px-4 py-2">Loan Amount</th>
-        <th class="px-4 py-2">Loan Approved</th>
+  <div class="overflow-x-auto">
+  <table class="table-auto mx-auto w-full px-5 rounded-xl mt-8 border">
+    <thead class="text-white text-left">
+      <tr class="bg-gradient-to-tr from-indigo-600 to-purple-600 py-2 px-4 text-white font-bold">
+        <th class="px-4 py-2">Loan ID</th>
+        <th class="px-4 py-2">Requested</th>
+        <th class="px-4 py-2">Amount</th>
+        <th class="px-4 py-2">Status</th>
         <th class="px-4 py-2">Action</th>
       </tr>
     </thead>
     <tbody>
       {% for loan in loans %}
-      <tr class="border-b dark:border-neutral-500">
-        <td class="px-4 py-2">
-         {{ loan.id }}
-        </td>
-        <td class="px-4 py-3 text-s border">
-          <span
-            class="px-2 py-1 font-bold leading-tight rounded-sm text-green-700 bg-green-100"
-          >
-            {{ loan.amount }}
-          </span>
+      <tr class="border-b">
+        <td class="px-4 py-2">{{ loan.id }}</td>
+        <td class="px-4 py-2">{{ loan.timestamp|date:"F d, Y" }}</td>
+        <td class="px-4 py-3 border">
+          <span class="px-2 py-1 font-bold leading-tight rounded-sm text-green-700 bg-green-100">$ {{ loan.amount|floatformat:2|intcomma }}</span>
         </td>
         <td class="px-4 py-2">
-          {{ loan.loan_approve }}
+          {% if loan.transaction_type == 4 %}Repaid{% elif loan.loan_approve %}Approved{% else %}Pending approval{% endif %}
         </td>
         <td class="px-4 py-2">
-          {% if loan.loan_approve %}
-          <a class="font-bold bg-red-900 text-white hover:text-blue-900 hover:bg-white border border-blue-900 font-bold px-4 py-2 rounded-lg" href='{% url "pay" loan.id %}'>Pay</a>
+          {% if loan.transaction_type == 4 %}
+          <span class="font-bold text-gray-600">Paid</span>
+          {% elif loan.loan_approve %}
+          <form method="post" action="{% url 'pay' loan.id %}">
+            {% csrf_token %}
+            <button type="submit" class="font-bold bg-red-900 text-white hover:text-blue-900 hover:bg-white border border-blue-900 px-4 py-2 rounded-lg">Pay</button>
+          </form>
           {% else %}
-          <p class="font-bold text-red-700 bg-red-100">Loan Pending</p>
+          <span class="font-bold text-red-700 bg-red-100 px-2 py-1">Loan pending</span>
           {% endif %}
         </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td class="px-4 py-6 text-center text-gray-600" colspan="5">You have not requested any loans yet.</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+  </div>
 </div>
 {% endblock %}
