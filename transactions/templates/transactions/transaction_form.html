@@ -1,31 +1,37 @@
-{% extends 'base.html' %} {% block head_title %}{{ title }}{% endblock %} {% block content %}
+{% extends 'base.html' %}
+{% load humanize %}
+{% block head_title %}{{ title }}{% endblock %}
+{% block content %}
 
-<div class="w-full flex mt-5 justify-center ">
-    <div class="bg-white w-5/12 rounded-lg">
+<div class="w-full flex mt-5 justify-center">
+    <div class="bg-white w-full md:w-8/12 lg:w-5/12 rounded-lg">
         {% if title == 'Request For Loan' %}
-<div><a class="font-bold text-blue text-center pb-5 pt-10 px-5" href="{% url 'loan_list' %}">View All Loan List</a></div>
+        <div class="pt-5 px-5 text-right"><a class="font-bold text-blue-900 underline" href="{% url 'loan_list' %}">View all your loans</a></div>
         {% endif %}
-        
-        <h1 class="font-bold text-3xl text-center pb-5 pt-10 px-5">{{ title }}</h1>
+
+        <h1 class="font-bold text-3xl text-center pb-2 pt-8 px-5">{{ title }}</h1>
+        <p class="text-center text-gray-700">Current balance: <span class="font-bold">$ {{ request.user.account.balance|floatformat:2|intcomma }}</span></p>
+        {% if help_text %}<p class="text-center text-gray-600 text-sm px-5 pt-1">{{ help_text }}</p>{% endif %}
         <form method="post" class="px-8 pt-6 pb-8 mb-4">
             {% csrf_token %}
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+            {% include 'form_errors.html' %}
 
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="amount">
                     Amount
                 </label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight border rounded-md border-gray-500 focus:outline-none focus:shadow-outline" name="amount" id="amount" type="number" required placeholder="Amount">
+                <input class="shadow appearance-none rounded-md w-full py-2 px-3 text-gray-700 leading-tight border {% if form.amount.errors %}border-red-500{% else %}border-gray-500{% endif %} focus:outline-none focus:shadow-outline" name="amount" id="amount" type="number" step="0.01" min="0.01" required placeholder="Amount" value="{{ form.amount.value|default_if_none:'' }}">
             </div>
-            {% if form.amount.errors %} {% for error in form.amount.errors %}
+            {% for error in form.amount.errors %}
             <p class="text-red-600 text-sm italic pb-2">{{ error }}</p>
-            {% endfor %} {% endif %}
+            {% endfor %}
             <div class="flex w-full justify-center">
-                <button class="bg-blue-900 text-white rounded-none hover:bg-white hover:text-blue-900 hover:border-blue-900 shadow hover:shadow-lg py-2 px-4 border border-gray-900 hover:border-transparent" type="submit">
-                Submit
-            </button>
+                <button class="bg-blue-900 text-white hover:bg-white hover:text-blue-900 hover:border-blue-900 shadow hover:shadow-lg py-2 px-4 border border-gray-900" type="submit">
+                    Submit
+                </button>
             </div>
         </form>
     </div>
-    
 </div>
 {% endblock %}
