@@ -1,11 +1,13 @@
 
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ObjectDoesNotExist
 from django import forms
 from .constants import ACCOUNT_TYPE, GENDER_TYPE
 from django.contrib.auth.models import User
 from .models import UserBankAccount, UserAddress
 
 class UserRegistrationForm(UserCreationForm):
+    email = forms.EmailField()
     birth_date = forms.DateField(widget=forms.DateInput(attrs={'type':'date'}))
     gender = forms.ChoiceField(choices=GENDER_TYPE)
     account_type = forms.ChoiceField(choices=ACCOUNT_TYPE)
@@ -92,7 +94,7 @@ class UserUpdateForm(forms.ModelForm):
             try:
                 user_account = self.instance.account
                 user_address = self.instance.address
-            except UserBankAccount.DoesNotExist:
+            except ObjectDoesNotExist:
                 user_account = None
                 user_address = None
 
